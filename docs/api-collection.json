@@ -1,0 +1,686 @@
+{
+	"info": {
+		"name": "Social Media Backend API",
+		"description": "Backend API for a social media platform with authentication, posts, and social features",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"full_name\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"  const body = pm.response.json();",
+									"  const jwt = body.token || body.accessToken || (body.data && (body.data.token || body.data.accessToken));",
+									"  if (jwt) pm.environment.set('token', jwt);",
+									"} catch (e) { /* ignore */ }"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"This is my new post!\",\n  \"media_url\": \"https://example.com/image.jpg\",\n  \"comments_enabled\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/posts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts"]
+						}
+					}
+				},
+				{
+					"name": "Get My Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/posts/my?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "my"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Post by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/posts/{{post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "{{post_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Search Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/posts/search?q={{q}}&page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "{{q}}"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Post",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Updated content\",\n  \"media_url\": \"https://example.com/new.jpg\",\n  \"comments_enabled\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/posts/{{post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "{{post_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/posts/{{post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "{{post_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Feed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/posts/feed?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posts", "feed"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/search?name={{name}}&page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{name}}"
+								},
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"New Name\",\n  \"email\": \"new@example.com\",\n  \"password\": \"NewPass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Follow User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/follow",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}", "follow"]
+						}
+					}
+				},
+				{
+					"name": "Unfollow User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/unfollow",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}", "unfollow"]
+						}
+					}
+				},
+				{
+					"name": "My Following",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/following?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "following"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "My Followers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/followers?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "followers"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Follow Counts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}", "stats"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Likes",
+			"item": [
+				{
+					"name": "Like Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"post_id\": {{post_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/likes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "likes"]
+						}
+					}
+				},
+				{
+					"name": "Unlike Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/likes/{{post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "likes", "{{post_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Post Likes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/likes/post/{{post_id}}?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "likes", "post", "{{post_id}}"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Likes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/likes/user/{{user_id}}?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "likes", "user", "{{user_id}}"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"post_id\": {{post_id}},\n  \"content\": \"Nice post!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/comments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "comments"]
+						}
+					}
+				},
+				{
+					"name": "Update Comment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Updated comment text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/comments/{{comment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "comments", "{{comment_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/comments/{{comment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "comments", "{{comment_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Post Comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/comments/post/{{post_id}}?page={{page}}&limit={{limit}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "comments", "post", "{{post_id}}"],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000"
+		},
+		{
+			"key": "token",
+			"value": "your_jwt_token_here"
+		},
+		{
+			"key": "post_id",
+			"value": "1"
+		},
+		{
+			"key": "q",
+			"value": "text"
+		},
+		{
+			"key": "page",
+			"value": "1"
+		},
+		{
+			"key": "limit",
+			"value": "20"
+		},
+		{
+			"key": "user_id",
+			"value": "2"
+		},
+		{
+			"key": "name",
+			"value": "alice"
+		},
+		{
+			"key": "comment_id",
+			"value": "1"
+		}
+	]
+}
