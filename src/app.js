@@ -37,11 +37,15 @@ app.get("/health", (req, res) => {
     res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
+
+app.get("/", (req, res) => {
+  res.redirect("/health");
+});
 // 404 handler — Task 1:
 // Place the 404 handler before the global error handler so that unmatched routes
 // return 404 (Route not found) instead of being swallowed by the error handler.
 app.use("*", (req, res) => {
-  res.status(404).json({ error: "Route home" });
+  res.status(404).json({ error: "Route not found" });
 });
 
 // Global error handler (must be LAST middleware)
